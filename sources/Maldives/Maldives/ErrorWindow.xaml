@@ -1,0 +1,15 @@
+﻿<local:MaldivesWindow x:Class="Maldives.ErrorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Maldives"
+        mc:Ignorable="d" SizeToContent="WidthAndHeight"
+        Title="ErrorWindow" Background="#a0ffffff">
+    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="22" MinWidth="400" MaxWidth="600">
+        <TextBlock Text="maldives" FontWeight="Light" FontSize="16" FontFamily="Consolas" />
+        <TextBlock Text="Error" FontSize="28"  FontWeight="Bold" Foreground="DarkRed" Margin="0,0,0,22" />
+        <TextBlock x:Name="MessageTextBlock" TextWrapping="Wrap" FontSize="16" Margin="0,0,0,22" />
+        <Button Content="Close" HorizontalAlignment="Right" Padding="16,6" Click="ButtonBase_OnClick" />
+    </StackPanel>
+</local:MaldivesWindow>
