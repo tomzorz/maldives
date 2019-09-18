@@ -1,0 +1,34 @@
+﻿<Window x:Class="Maldives.ProgressWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Maldives" WindowStartupLocation="CenterScreen"
+        mc:Ignorable="d" ResizeMode="CanMinimize" Icon="icon.ico"
+        Title="maldives" Height="215" Width="450">
+    <Grid Margin="24,6,24,12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0">
+            <Run Text="Deploying package from " /><Run x:Name="FromName" Text="Folder" Foreground="DodgerBlue" /><Run Text=" to " /><Run x:Name="DeviceName" Text="WHI4T5E" Foreground="DodgerBlue" />
+        </TextBlock>
+        <TextBlock Grid.Row="1" Text="4% complete" FontSize="16" Padding="0,2,0,0" x:Name="CompletePercent" />
+        <ProgressBar Grid.Row="2" HorizontalAlignment="Stretch" Height="20" Margin="0,10,0,8" Background="LightGray" x:Name="ProgressBar" />
+        <TextBlock Grid.Row="3">
+            <Run Text="Name: " /><Run x:Name="FileName" />
+        </TextBlock>
+        <TextBlock Grid.Row="4">
+            <Run Text="Time remaining: " /><Run x:Name="Remaining" />
+        </TextBlock>
+        <Rectangle Grid.Row="5" Height="1" Fill="LightGray" HorizontalAlignment="Stretch" Margin="-24,10,-24,10" />
+        <Button Grid.Row="6" Content="Cancel" VerticalAlignment="Center" HorizontalAlignment="Right" Padding="16,6" x:Name="Button" Click="ButtonHandler" />
+        <TextBlock Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Left" x:Name="CloseCountdown" />
+    </Grid>
+</Window>

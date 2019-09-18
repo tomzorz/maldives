@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -19,12 +20,13 @@ namespace Maldives
     public partial class App : Application
     {
         private string _deploy;
+        private Action _killOrder;
 
         private async void App_OnStartup(object sender, StartupEventArgs e)
         {
             // debug
             var args = e.Args;
-            //var args = new[] {@"testbuild.mpk"};
+            //var args = new[] { @"D:\Projects_development\Temporary\PersistenceTest\PersistenceTest\App\persistenceTest.mpk"};
             // end debug
 
             if (args.Length != 1)
@@ -67,16 +69,36 @@ namespace Maldives
 
         private void DisplayError(string message)
         {
-            var w = new ErrorWindow(message);
-            w.Show();
+            MessageBox.Show(message, "maldives - Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            Environment.Exit(0);
         }
 
         private async Task DeployToDevice(string s)
         {
-            var messages = new ObservableCollection<string>();
-            var lw = new LogWindow(messages);
-            lw.Show();
-            await RunMldb($"install -u \"{_deploy}\"", s1 => { Dispatcher.Invoke(() => { messages.Insert(0, s1); }); });
+            var pw = new ProgressWindow(_deploy, s, () =>
+            {
+                _killOrder?.Invoke();
+            });
+            pw.Show();
+            await RunMldb($"install -u \"{_deploy}\"",
+                s1 => {
+                    if(string.IsNullOrWhiteSpace(s1)) return;
+                    Dispatcher.Invoke(() =>
+                    {
+                        var st = s1.ToUpperInvariant();
+                        if (st.Contains("SUCCESSFULLY INSTALLED") || st.Contains("SUCCESSFULLY UPDATED"))
+                        {
+                            pw.SignalDone();
+                        } else if (st.Contains("FAILED") || st.Contains("ERROR"))
+                        {
+                            pw.SignalError();
+                        } else if (st.Contains("%"))
+                        {
+                            var numberString = Regex.Match(st, @"\d+").Value;
+                            pw.UpdatePercent(int.Parse(numberString));
+                        }
+                    });
+                });
         }
 
         private async Task<List<string>> EnumerateDevices()
@@ -93,10 +115,14 @@ namespace Maldives
         private bool EnsureTools()
         {
             var path = GetMldbPath();
-            return File.Exists(path);
+            return !string.IsNullOrWhiteSpace(path) && File.Exists(path);
         }
 
-        private string GetMldbPath() => $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\MagicLeap\mlsdk\v0.22.0\tools\mldb\mldb.exe";
+        private string GetMldbPath()
+        {
+            var sdks = Directory.EnumerateDirectories($@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\MagicLeap\mlsdk").ToList();
+            return !sdks.Any() ? null : $@"{sdks.Last()}\tools\mldb\mldb.exe";
+        }
 
         private Task RunMldb(string args, Action<string> output)
         {
@@ -116,8 +142,13 @@ namespace Maldives
             p.ErrorDataReceived += (sender, eventArgs) => output(eventArgs.Data);
             p.OutputDataReceived += (sender, eventArgs) => output(eventArgs.Data);
             var tcs = new TaskCompletionSource<object>();
-            p.Exited += (sender, eventArgs) => { tcs.SetResult(new object()); };
+            p.Exited += (sender, eventArgs) =>
+            {
+                tcs.SetResult(new object());
+                _killOrder = null;
+            };
             p.Start();
+            _killOrder = () => p.Kill();
             p.BeginErrorReadLine();
             p.BeginOutputReadLine();
             return tcs.Task;

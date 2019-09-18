@@ -1,5 +1,7 @@
 # maldives
 
+![](maldives.gif)
+
 ### _Just double click any .mpk file to instantly install/update it on your Magic Leap One!_
 
 Assign this small tool as the application to open `.mpk` files, to enable the smoothest deployment experience from Plantation, FL to Budapest! 
