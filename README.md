@@ -1,6 +1,6 @@
 # maldives
 
-![](maldives.gif)
+![](maldives-in-action.gif)
 
 ### _Just double click any .mpk file to instantly install/update it on your Magic Leap One!_
 
